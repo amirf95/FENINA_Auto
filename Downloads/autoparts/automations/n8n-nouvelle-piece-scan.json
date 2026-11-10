@@ -1,0 +1,274 @@
+{
+  "name": "Nouvelle pièce - scan code-barres",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Avant d'utiliser ce workflow\n\n1. Créez un compte \"automation\" dans Django (voir les instructions données à part) et notez son email + mot de passe.\n2. n8n Cloud ne peut pas atteindre votre API locale (localhost) : exposez-la sur internet avec ngrok ou Cloudflare Tunnel.\n3. Ajoutez l'URL du tunnel à `ALLOWED_HOSTS` dans le `.env` du backend, sinon Django refuse la requête (DisallowedHost).\n4. Ouvrez le nœud **Config** ci-dessous et remplissez `apiBase` (URL du tunnel, sans `/` final), `email`, `password`.\n5. Cliquez **Activate** en haut du workflow pour publier le formulaire, puis ouvrez l'URL de production du nœud **Scanner le code-barres**.\n6. Scannez un code-barres, vérifiez/complétez les champs pré-remplis, validez.",
+        "height": 420,
+        "width": 460
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-00000000000d",
+      "name": "Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -40]
+    },
+    {
+      "parameters": {
+        "formTitle": "Nouvelle pièce — Étape 1",
+        "formDescription": "Scannez ou saisissez le code-barres de la pièce pour commencer.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Code-barres",
+              "fieldType": "text",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000001",
+      "name": "Scanner le code-barres",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [0, 300],
+      "webhookId": "f1a1b2c3-0000-4aaa-8001-000000000002"
+    },
+    {
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1a1a1a1-0000-4aaa-8001-000000000001",
+              "name": "apiBase",
+              "type": "string",
+              "value": "https://YOUR-TUNNEL-URL.example (sans / final)"
+            },
+            {
+              "id": "a1a1a1a1-0000-4aaa-8001-000000000002",
+              "name": "email",
+              "type": "string",
+              "value": "automation@fenina.local"
+            },
+            {
+              "id": "a1a1a1a1-0000-4aaa-8001-000000000003",
+              "name": "password",
+              "type": "string",
+              "value": "CHANGE_ME"
+            }
+          ]
+        }
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000003",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').item.json.apiBase }}/api/auth/login/",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{ $('Config').item.json.email }}\",\n  \"password\": \"{{ $('Config').item.json.password }}\"\n}",
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000004",
+      "name": "Connexion",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').item.json.apiBase }}/api/parts/lookup-barcode/?barcode={{ encodeURIComponent($('Scanner le code-barres').item.json['Code-barres']) }}",
+        "method": "GET",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Connexion').item.json.access }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000005",
+      "name": "Recherche code-barres",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const barcode = $('Scanner le code-barres').item.json['Code-barres'];\nconst lookup = $json;\n\nlet name = '', brand = '', category = '', oem = '', priceht = '0', location = '', note = '';\n\nif (lookup.matched && lookup.source === 'internal') {\n  const p = lookup.part;\n  name = p.name || '';\n  brand = p.brand || '';\n  category = p.category || '';\n  oem = p.oem || '';\n  priceht = (p.priceht !== undefined && p.priceht !== null) ? String(p.priceht) : '0';\n  location = p.location || '';\n  note = `Cette reference existe deja : \"${p.name}\" (SKU ${p.sku}). Verifiez avant de continuer, vous risquez de creer un doublon.`;\n} else if (lookup.matched && lookup.source === 'external') {\n  const s = lookup.suggested || {};\n  name = s.name || '';\n  brand = s.brand || '';\n  category = s.category || '';\n  note = 'Designation / marque / categorie pre-remplies automatiquement a partir du code-barres - a verifier avant de valider.';\n} else {\n  note = 'Aucune correspondance trouvee pour ce code - remplissez les champs manuellement.';\n}\n\nreturn [{\n  json: { barcode, name, brand, category, oem, priceht, location, note }\n}];"
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000006",
+      "name": "Préparer le pré-remplissage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "formTitle": "Nouvelle pièce — Étape 2",
+        "formDescription": "={{ $json.note }}",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "SKU",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Désignation",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.name }}",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Marque",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.brand }}"
+            },
+            {
+              "fieldLabel": "Catégorie",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.category }}"
+            },
+            {
+              "fieldLabel": "Référence OEM",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.oem }}"
+            },
+            {
+              "fieldLabel": "Prix de vente",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Prix achat (HT)",
+              "fieldType": "number",
+              "defaultValue": "={{ $json.priceht }}"
+            },
+            {
+              "fieldLabel": "Quantité initiale",
+              "fieldType": "number",
+              "defaultValue": "0",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Seuil alerte",
+              "fieldType": "number",
+              "defaultValue": "5"
+            },
+            {
+              "fieldLabel": "Emplacement",
+              "fieldType": "text",
+              "defaultValue": "={{ $json.location }}"
+            },
+            {
+              "fieldLabel": "barcode_value",
+              "fieldType": "hiddenField",
+              "fieldValue": "={{ $json.barcode }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000007",
+      "name": "Compléter la pièce",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [1100, 300],
+      "webhookId": "f1a1b2c3-0000-4aaa-8001-000000000008"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').item.json.apiBase }}/api/auth/login/",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{ $('Config').item.json.email }}\",\n  \"password\": \"{{ $('Config').item.json.password }}\"\n}",
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-000000000009",
+      "name": "Connexion 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1320, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Config').item.json.apiBase }}/api/parts/",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sku\": \"{{ $('Compléter la pièce').item.json['SKU'] }}\",\n  \"name\": \"{{ $('Compléter la pièce').item.json['Désignation'] }}\",\n  \"oem\": \"{{ $('Compléter la pièce').item.json['Référence OEM'] }}\",\n  \"barcode\": \"{{ $('Compléter la pièce').item.json['barcode_value'] }}\",\n  \"qr_code\": null,\n  \"brand\": \"{{ $('Compléter la pièce').item.json['Marque'] }}\",\n  \"category\": \"{{ $('Compléter la pièce').item.json['Catégorie'] }}\",\n  \"specs\": {},\n  \"price\": \"{{ $('Compléter la pièce').item.json['Prix de vente'] }}\",\n  \"priceht\": \"{{ $('Compléter la pièce').item.json['Prix achat (HT)'] }}\",\n  \"quantity\": {{ $('Compléter la pièce').item.json['Quantité initiale'] }},\n  \"reorder_level\": {{ $('Compléter la pièce').item.json['Seuil alerte'] }},\n  \"location\": \"{{ $('Compléter la pièce').item.json['Emplacement'] }}\"\n}",
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-00000000000a",
+      "name": "Créer la pièce",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1540, 300]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Pièce ajoutée !",
+        "completionMessage": "={{ $json.name }} (SKU {{ $json.sku }}) a été ajouté au stock.",
+        "options": {}
+      },
+      "id": "f1a1b2c3-0000-4aaa-8001-00000000000b",
+      "name": "Confirmation",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [1760, 300],
+      "webhookId": "f1a1b2c3-0000-4aaa-8001-00000000000c"
+    }
+  ],
+  "connections": {
+    "Scanner le code-barres": {
+      "main": [[{ "node": "Config", "type": "main", "index": 0 }]]
+    },
+    "Config": {
+      "main": [[{ "node": "Connexion", "type": "main", "index": 0 }]]
+    },
+    "Connexion": {
+      "main": [[{ "node": "Recherche code-barres", "type": "main", "index": 0 }]]
+    },
+    "Recherche code-barres": {
+      "main": [[{ "node": "Préparer le pré-remplissage", "type": "main", "index": 0 }]]
+    },
+    "Préparer le pré-remplissage": {
+      "main": [[{ "node": "Compléter la pièce", "type": "main", "index": 0 }]]
+    },
+    "Compléter la pièce": {
+      "main": [[{ "node": "Connexion 2", "type": "main", "index": 0 }]]
+    },
+    "Connexion 2": {
+      "main": [[{ "node": "Créer la pièce", "type": "main", "index": 0 }]]
+    },
+    "Créer la pièce": {
+      "main": [[{ "node": "Confirmation", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

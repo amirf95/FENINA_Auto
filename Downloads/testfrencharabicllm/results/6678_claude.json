@@ -1,0 +1,20 @@
+{
+  "invoice_number": "006678",
+  "date": "19/12/22",
+  "client_name": "FIAT UNO / عبد السلام",
+  "items": [
+    {
+      "qty": 1,
+      "designation": "contact",
+      "unit_price": null,
+      "total": 59400
+    },
+    {
+      "qty": null,
+      "designation": "RENAULT",
+      "unit_price": null,
+      "total": 55000
+    }
+  ],
+  "grand_total": null
+}

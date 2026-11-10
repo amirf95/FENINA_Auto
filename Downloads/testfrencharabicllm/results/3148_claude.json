@@ -1,0 +1,14 @@
+{
+  "invoice_number": "003148",
+  "date": "23/57/24",
+  "client_name": null,
+  "items": [
+    {
+      "qty": 1,
+      "designation": "Glace",
+      "unit_price": null,
+      "total": 374.0
+    }
+  ],
+  "grand_total": 374.0
+}

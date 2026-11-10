@@ -1,0 +1,14 @@
+{
+  "invoice_number": "003148",
+  "date": "23/05/24",
+  "client_name": "null",
+  "items": [
+    {
+      "qty": 1,
+      "designation": "G12 Renault",
+      "unit_price": null,
+      "total": 37.0
+    }
+  ],
+  "grand_total": null
+}

@@ -1,0 +1,14 @@
+{
+  "invoice_number": "009033",
+  "date": "30/10/23",
+  "client_name": "null",
+  "items": [
+    {
+      "qty": 2,
+      "designation": "Amm",
+      "unit_price": null,
+      "total": null
+    }
+  ],
+  "grand_total": null
+}

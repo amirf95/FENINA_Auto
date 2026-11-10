@@ -1,0 +1,26 @@
+{
+  "invoice_number": "004296",
+  "date": "23/10/23",
+  "client_name": null,
+  "items": [
+    {
+      "qty": 3,
+      "designation": "Courroie",
+      "unit_price": 13.475,
+      "total": 44800
+    },
+    {
+      "qty": 3,
+      "designation": null,
+      "unit_price": 13.475,
+      "total": null
+    },
+    {
+      "qty": 2,
+      "designation": "Courroie",
+      "unit_price": null,
+      "total": null
+    }
+  ],
+  "grand_total": null
+}

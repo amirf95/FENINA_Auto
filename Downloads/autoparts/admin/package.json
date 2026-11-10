@@ -1,0 +1,19 @@
+{
+  "name": "fenina-admin",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "concurrently --names \"django,storefront,admin\" --prefix-colors \"cyan,green,magenta\" \".\\fenina-api\\fenina-api\\.venv\\Scripts\\python.exe .\\fenina-api\\fenina-api\\manage.py runserver\" \"npm run dev --prefix ..\\fenina-storefront\" \"vite\""
+  },
+  "dependencies": {
+    "@zxing/browser": "^0.1.5",
+    "lucide-react": "^0.525.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "concurrently": "^10.0.3",
+    "vite": "^6.0.0"
+  }
+}

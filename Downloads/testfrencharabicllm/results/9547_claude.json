@@ -1,0 +1,32 @@
+{
+  "invoice_number": "009547",
+  "date": "09/02/23",
+  "client_name": null,
+  "items": [
+    {
+      "qty": null,
+      "designation": null,
+      "unit_price": null,
+      "total": 3870
+    },
+    {
+      "qty": null,
+      "designation": null,
+      "unit_price": null,
+      "total": 1500
+    },
+    {
+      "qty": null,
+      "designation": "RENAULT",
+      "unit_price": null,
+      "total": 15000
+    },
+    {
+      "qty": null,
+      "designation": "PEUGEOT",
+      "unit_price": null,
+      "total": null
+    }
+  ],
+  "grand_total": null
+}

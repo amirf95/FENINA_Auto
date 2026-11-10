@@ -1,0 +1,9 @@
+date,area,summary,files_or_artifacts,status
+2026-09-30,Project audit,"Full audit of backend/frontend structure, module completeness, and gaps (no tests, no negative-stock guard, broken OCR script, storefront has no checkout)","(read-only, no files changed)",Done
+2026-09-30,Inventory schema,"Extended Part model: added oem/barcode/qr_code/specs/location; renamed cost to priceht via hand-written RenameField migration (auto-generated one would have dropped data)","catalog/models.py; catalog/migrations/0004_part_barcode_fields.py; catalog/migrations/0005_part_qr_code.py; catalog/serializers.py",Done - migrated and verified
+2026-09-30,Barcode lookup API,"GET /api/parts/lookup-barcode/ - internal DB match first, UPCitemdb free-trial fallback second","catalog/barcode.py; catalog/views.py; .env.example (UPCITEMDB_API_KEY)",Done - tested live over HTTP
+2026-09-30,QR lookup API,"GET /api/parts/lookup-qrcode/ - internal match only (QR payloads aren't UPC codes)","catalog/views.py",Done - tested live over HTTP
+2026-09-30,Admin UI autofill,"Add-part form: new fields (OEM/barcode/QR/location/specs editor); auto-lookup on blur/Enter; works with physical HID barcode scanners for free","admin/src/components/PartEditor.jsx; admin/src/App.jsx",Done - build verified
+2026-09-30,Camera scanner,"Live camera barcode/QR decoding via @zxing/browser, lazy-loaded to avoid bloating the main bundle","admin/src/components/BarcodeScannerModal.jsx",Done - build verified
+2026-09-30,n8n automation,"2-step 'scan to add part' workflow: Form Trigger -> lookup-barcode API -> prefilled form -> POST /api/parts/","automations/n8n-nouvelle-piece-scan.json",Built - not yet configured or tested by user (needs automation account, tunnel, ALLOWED_HOSTS update, n8n import+activate)
+2026-09-30,Docs,"Created project overview doc and this changelog for progress tracking across sessions","docs/PROJECT_OVERVIEW.md; docs/session-log.csv",Done

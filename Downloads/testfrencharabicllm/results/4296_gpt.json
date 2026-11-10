@@ -1,0 +1,26 @@
+{
+  "invoice_number": "004296",
+  "date": "23/12/23",
+  "client_name": "بن عروس",
+  "items": [
+    {
+      "qty": 3,
+      "designation": "كوليس",
+      "unit_price": 13.7,
+      "total": 44.8
+    },
+    {
+      "qty": null,
+      "designation": "RENAULT",
+      "unit_price": 13.7,
+      "total": null
+    },
+    {
+      "qty": null,
+      "designation": "كوليس",
+      "unit_price": 0,
+      "total": 168
+    }
+  ],
+  "grand_total": null
+}
