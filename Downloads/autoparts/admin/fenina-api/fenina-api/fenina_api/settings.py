@@ -14,12 +14,15 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-change-me-in-production")
 DEBUG = os.getenv("DEBUG", "False") == "True"
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS = ['*']
+    
+"""
     host.strip() for host in os.getenv(
         "ALLOWED_HOSTS",
         "localhost,127.0.0.1,fenina-api.vercel.app,.vercel.app",
     ).split(",") if host.strip()
-]
+"""
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
