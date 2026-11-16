@@ -199,7 +199,6 @@ export default function CarBlueprint() {
   const fltProgress = getLocalProgress(revealProgress, PARTS_BY_KEY.flt.revealWindow, reducedMotion);
   const frnProgress = getLocalProgress(revealProgress, PARTS_BY_KEY.frn.revealWindow, reducedMotion);
   const susProgress = getLocalProgress(revealProgress, PARTS_BY_KEY.sus.revealWindow, reducedMotion);
-  const carTrimProgress = getLocalProgress(revealProgress, PARTS_BY_KEY.car.revealWindow, reducedMotion);
 
   // Each shape that actually "draws itself" owns a plain ref (attached
   // directly below as `ref={...}`) plus a derived style from that ref.
@@ -210,14 +209,12 @@ export default function CarBlueprint() {
   const eclRef = useRef<SVGEllipseElement>(null);
   const frnRef = useRef<SVGCircleElement>(null);
   const susRef = useRef<SVGPathElement>(null);
-  const carTrimRef = useRef<SVGPathElement>(null);
 
   const outlineStyle = useSelfDrawingStyle(outlineRef, outlineProgress);
   const moteurStyle = useSelfDrawingStyle(moteurRef, moteurProgress);
   const eclStyle = useSelfDrawingStyle(eclRef, eclProgress);
   const frnStyle = useSelfDrawingStyle(frnRef, frnProgress);
   const susStyle = useSelfDrawingStyle(susRef, susProgress);
-  const carTrimStyle = useSelfDrawingStyle(carTrimRef, carTrimProgress);
 
   const diagram = (
     <div className="blueprint-content">

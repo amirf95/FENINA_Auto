@@ -1,4 +1,5 @@
-export const API = "http://localhost:8000/api";
+const DEFAULT_API = "http://localhost:8000/api";
+export const API = (import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API).replace(/\/$/, "");
 export const API_BASE = API.replace(/\/api$/, "");
 
 // DRF returns absolute "next"/"previous" page URLs — strip the API origin so

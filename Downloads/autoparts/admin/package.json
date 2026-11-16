@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "concurrently --names \"django,storefront,admin\" --prefix-colors \"cyan,green,magenta\" \".\\fenina-api\\fenina-api\\.venv\\Scripts\\python.exe .\\fenina-api\\fenina-api\\manage.py runserver\" \"npm run dev --prefix ..\\fenina-storefront\" \"vite\""
+    "dev": "concurrently --names \"django,storefront,admin\" --prefix-colors \"cyan,green,magenta\" \".\\fenina-api\\fenina-api\\.venv\\Scripts\\python.exe .\\fenina-api\\fenina-api\\manage.py runserver\" \"npm run dev --prefix ..\\fenina-storefront\" \"vite\"",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@zxing/browser": "^0.1.5",
