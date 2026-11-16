@@ -8,19 +8,38 @@ import { BrowserMultiFormatReader } from "@zxing/browser";
 // then the caller is expected to close this modal.
 export default function BarcodeScannerModal({ onDetected, onClose }) {
   const videoRef = useRef(null);
-  const readerRef = useRef(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const reader = new BrowserMultiFormatReader();
-    readerRef.current = reader;
     let cancelled = false;
+
+    const stopVideoStream = () => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      try {
+        video.pause();
+      } catch (e) {
+        // Ignore browser autoplay/pause race warnings on teardown.
+      }
+
+      try {
+        const stream = video.srcObject;
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+        }
+        video.srcObject = null;
+      } catch (e) {
+        // Ignore stream cleanup errors.
+      }
+    };
 
     reader
       .decodeFromConstraints(
         { video: { facingMode: "environment" } },
         videoRef.current,
-        (result, err) => {
+        (result) => {
           if (cancelled || !result) return;
           onDetected(result.getText());
         }
@@ -36,7 +55,12 @@ export default function BarcodeScannerModal({ onDetected, onClose }) {
 
     return () => {
       cancelled = true;
-      BrowserMultiFormatReader.releaseAllStreams();
+      stopVideoStream();
+      try {
+        BrowserMultiFormatReader.releaseAllStreams();
+      } catch (e) {
+        // Ignore stream release warnings.
+      }
     };
   }, [onDetected]);
 
